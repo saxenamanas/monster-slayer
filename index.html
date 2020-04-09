@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="./js/vue.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monster Slayer</title>
+</head>
+<body style="background-image: url('images/bg-01.jpg');background-repeat: no-repeat;background-size: cover;">
+    <div id="app" class="card" :style="{height: cardLength+'px'}">
+        <span class="player">
+            You
+            <div class="playerHealth" style="background-color: rgb(70, 221, 83); margin: 0; color: white;" :style="{width: playerHealth + '%'}">
+                {{playerHealth}}
+            </div>
+        </span>
+
+
+
+        <span class="monster">
+            Monster
+            <div class="monsterHealth" style="background-color: rgb(70, 221, 83); margin: 0; color: white;" :style="{width: monsterHealth + '%'}">
+                {{monsterHealth}}
+            </div>
+        </span>
+        <div>
+            <table class="tools">
+                <tr style="width: 400px;">
+                    <template v-if="gameStatus">
+                    <td class="pad-left pad-right">
+                        <button class="attack" @click="attack">Attack</button>
+                    </td>
+                    <td class="pad-left pad-right">
+                        <button class="special" @click="special">Special Attack</button>
+                    </td>
+                    <td class="pad-left pad-right">
+                        <button class="heal" @click="heal">Heal</button>
+                    </td>
+                    <td class="pad-left pad-right">
+                        <button class="giveup" @click="giveup">Give Up</button>
+                    </td>
+                    </template>
+                    <template v-else>
+                        <td style="padding-left: 300px;padding-right: 300px;">
+                            <button class="start" @click="newGame">New Game</button>
+                        </td>
+                    </template>
+                </tr>
+            </table>
+        </div>
+        <div class="scoreboard">
+            <ul>
+            <li class="playerturn" style="background: url('images/bg-01.jpg');background-repeat: no-repeat;background-size: cover;" v-for="list in turns">{{list}}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+        el: '#app',
+        data: {
+            playerHealth : 0,
+            monsterHealth : 0,
+            turns: [],
+            gameStatus : false,
+            cardLength : 400,
+            additional : 0
+        },
+        methods: {
+            newGame: function(){
+                this.gameStatus=!this.gameStatus;
+                this.turns.length = 0;
+                this.playerHealth = 100;
+                this.monsterHealth = 100;               
+            },
+            attack: function(){
+                let dmg = Math.floor((Math.random() * 10) + 1);
+                let enemydmg = Math.floor((Math.random() * 10) + 1);
+                this.turns.push("Player hit monster and dealt a damage of "+dmg);
+                this.turns.push("Monster hit player and dealt a total damage of "+enemydmg);
+                console.log(this.turns);
+                this.monsterHealth = this.monsterHealth - dmg;
+                this.playerHealth = this.playerHealth - enemydmg;
+                this.additional++;
+                this.cardLength = this.cardLength+80;
+            },
+            special: function(){
+                let dmg = Math.floor((Math.random() * 25) + 1);
+                let enemydmg = Math.floor((Math.random() * 15) + 1);
+                this.turns.push("Player used special ability and dealt a damage of "+dmg);
+                this.turns.push("Monster hit player and dealt a total damage of "+enemydmg);
+                this.monsterHealth = this.monsterHealth - dmg;
+                this.playerHealth = this.playerHealth - enemydmg;
+                this.additional++;
+                this.cardLength = this.cardLength+80;
+            },
+            heal: function(){
+                let heal = Math.floor((Math.random() * 10) + 1);
+                this.playerHealth = this.playerHealth + heal;
+                let enemydmg = Math.floor((Math.random() * 10) + 1);
+                this.playerHealth = this.playerHealth - enemydmg;
+                this.turns.push("Player healed himself with "+heal +" amount of health");
+                this.turns.push("Monster hit player and dealt a total damage of "+enemydmg);
+                this.additional++;
+                this.cardLength = this.cardLength+80;
+            },
+            giveup: function(){
+                if (confirm("Are you sure you want to give up?")) {
+                this.gameStatus=!this.gameStatus;
+                this.playerHealth = 0;
+                this.monsterHealth = 0;
+                this.turns.length = 0;
+                this.cardLength = this.cardLength-this.additional*80;
+                this.additional = 0;
+                }
+            }
+            
+        }
+        })
+    </script>
+</body>
+</html>
+
